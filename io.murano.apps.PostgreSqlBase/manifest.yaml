@@ -1,0 +1,8 @@
+Format: 1.0
+Type: Library
+FullName: io.murano.apps.PostgreSqlBase
+Name: PostgreSQL base classes
+Author: 'Mirantis, Inc'
+Tags: [Database, Postgre, SQL, RDBMS]
+Classes:
+ io.murano.apps.PostgreSqlBase: PostgreSqlBase.yaml

@@ -1,0 +1,20 @@
+Namespaces:
+    =: io.murano
+
+Name: CloudObject
+
+Properties:
+  cloud:
+    Contract: $.class(Cloud)
+
+Methods:
+  getCloud:
+    Body:
+      - If: $.cloud != null
+        Then:
+          Return: $.cloud
+      - $parentObj: $.find(CloudObject)
+      - If: $parentObj != null
+        Then:
+          Return: $parentObj.getCloud()
+      - Return: $.find(Cloud)

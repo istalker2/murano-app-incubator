@@ -1,0 +1,19 @@
+Format: 1.0
+
+Type: Application
+
+FullName: io.murano.apps.Cloud
+
+Name: OpenStack Region
+
+Description: |
+  Application representing OpenStack region
+
+Author: 'murano.io'
+
+Tags: [Infrastructure]
+
+Classes:
+  io.murano.apps.Cloud: CloudApp.yaml
+
+UI: ui.yaml

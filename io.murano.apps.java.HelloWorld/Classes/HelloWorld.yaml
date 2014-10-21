@@ -1,0 +1,68 @@
+Namespaces:
+  =: io.murano.apps.java
+  std: io.murano
+  sys: io.murano.system
+  res: io.murano.resources
+  apps: io.murano.apps
+
+Name: HelloWorld
+
+Extends: apps:ServletApplication
+
+Properties:
+  name:
+    Contract: $.string().notNull()
+  repository:
+    Contract: $.string().notNull()
+  dir:
+    Contract: $.string().notNull()
+  database:
+    Contract: $.class(apps:PostgreSqlBase).notNull()
+  dbName:
+    Contract: $.string().notNull()
+  dbUser:
+    Contract: $.string().notNull()
+  dbPassword:
+    Contract: $.string().notNull()
+
+Workflow:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.super($.deploy())
+      - $.database.deploy()
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $.database.createDatabase($.dbName, $.dbUser, $.dbPassword)
+
+          - $.container.deployApp($this)
+
+          - $._environment.reporter.report($this,
+                format('Application is available at http://{0}:8080/{1}', $.container.publicIp, $.dir))
+          - $.setAttr(deployed, true)
+
+  deployApp:
+    Arguments:
+      instance:
+        Contract: $.class(res:Instance).notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Setting up the application on Tomcat.')
+      - $template: $resources.yaml('DeployTomcatApp.template').bind(dict(
+            repository => $.repository,
+            dir => $.dir
+          ))
+      - $instance.agent.call($template, $resources)
+
+      - $._environment.reporter.report($this, 'Configure access to PostgreSql.')
+      - $template: $resources.yaml('ConfigureAccessToPostgreSql.template').bind(dict(
+            database => $.dbName,
+            username => $.dbUser,
+            password => $.dbPassword,
+            host => $.database.publicIp,
+            dir => $.dir
+          ))
+      - $instance.agent.call($template, $resources)

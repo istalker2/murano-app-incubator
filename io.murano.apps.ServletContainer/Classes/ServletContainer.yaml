@@ -1,0 +1,18 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+
+Name: ServletContainer
+
+Extends: std:Application
+
+Properties:
+  publicIp:
+    Contract: $.string()
+    Usage: Out
+
+Workflow:
+  deployApp:
+    Arguments:
+      app:
+        Contract: $.class(ServletApplication).notNull()

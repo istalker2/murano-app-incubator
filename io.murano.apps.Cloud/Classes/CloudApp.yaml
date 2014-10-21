@@ -1,0 +1,20 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+
+Name: Cloud
+
+Properties:
+  name:
+    Contract: $.string().notNull()
+
+Extends:
+  - std:Application
+  - std:Cloud
+
+Methods:
+  deploy:
+    Body:
+      - $.cast(std:Application).deploy()
+      - $.find(std:Environment).require().reporter.report($this,
+          format('Cloud {0} configured successfully', $.name))

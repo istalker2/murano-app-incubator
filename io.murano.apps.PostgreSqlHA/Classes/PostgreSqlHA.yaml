@@ -1,0 +1,55 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+
+
+Name: PostgreSqlHA
+
+Extends: PostgreSqlBase
+
+Properties:
+  nodes:
+    Contract: [$.class(PostgreSql)]
+
+Workflow:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.nodes.pselect($.deploy())
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $.switchOver()
+          - $.setAttr(deployed, true)
+
+  createDatabase:
+    Arguments:
+      - database:
+          Contract: $.string().notNull()
+      - username:
+          Contract: $.string().notNull()
+      - password:
+          Contract: $.string().notNull()
+    Body:
+      - $.getActiveNode().createDatabase(database => $database, username => $username, password => $password)
+
+  getActiveNode:
+    Body:
+      - $nodeIndex: $.getAttr(activeNode, 0)
+      - Return: $.nodes[$nodeIndex]
+
+  switchOver:
+    Usage: Action
+    Body:
+      - $nodeIndex: $.getAttr(activeNode, 0-1)
+      - $nodeIndex: $nodeIndex + 1
+      - If: $nodeIndex >= len($this.nodes)
+        Then:
+          - $nodeIndex: 0
+      - $.setAttr(activeNode, $nodeIndex)
+      - $.publicIp: $.nodes[$nodeIndex].publicIp
+      - $._environment.reporter.report($this, format('[PostgreSQL HA] Now available at {0}', $.publicIp))

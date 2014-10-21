@@ -1,0 +1,25 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+
+
+Name: PostgreSqlBase
+
+Extends: std:Application
+
+Properties:
+  publicIp:
+    Contract: $.string()
+    Usage: Out
+
+Workflow:
+  createDatabase:
+    Arguments:
+      - database:
+          Contract: $.string().notNull()
+      - username:
+          Contract: $.string().notNull()
+      - password:
+          Contract: $.string().notNull()

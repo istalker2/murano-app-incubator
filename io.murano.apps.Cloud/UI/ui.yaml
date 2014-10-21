@@ -1,0 +1,44 @@
+Version: 2
+
+Application:
+  ?:
+    type: io.murano.apps.Cloud
+  name: $.appConfiguration.name
+  regionName: $.appConfiguration.regionName
+
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: title
+          type: string
+          required: false
+          hidden: true
+          description:  >-
+            Logical partioion of OpenStack cloud.
+            This may be separate OpenStack region or just a partition of your environment
+        - name: name
+          type: string
+          label: Cloud name
+          description: >-
+            Name for your cloud. Just A-Z, a-z, 0-9, dash and underline are allowed.
+          minLength: 2
+          maxLength: 64
+          regexpValidator: '^[-\w]+$'
+          errorMessages:
+            invalid: Just letters, numbers, underscores and hyphens are allowed.
+          helpText: Just letters, numbers, underscores and hyphens are allowed.
+        - name: regionName
+          type: string
+          label: Region name
+          description: >-
+            Region name for this cloud as written in Keystone.
+            Leave empty if there is only one region in your cloud.
+            Just A-Z, a-z, 0-9, dash and underline are allowed.
+          minLength: 0
+          maxLength: 64
+          required: false
+          regexpValidator: '^[-\w]*$'
+          errorMessages:
+            invalid: Just letters, numbers, underscores and hyphens are allowed.
+          helpText: Just letters, numbers, underscores and hyphens are allowed.

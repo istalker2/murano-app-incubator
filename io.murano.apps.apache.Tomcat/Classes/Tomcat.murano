@@ -1,0 +1,64 @@
+Namespaces:
+  =: io.murano.apps.apache
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  apps: io.murano.apps
+
+
+Name: Tomcat
+
+Extends: apps:ServletContainer
+
+Properties:
+  name:
+    Contract: $.string().notNull()
+
+  instance:
+    Contract: $.class(res:Instance).notNull()
+
+Workflow:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $._environment.reporter.report($this, '[Tomcat] Creating VM for Tomcat')
+          - $securityGroupIngress:
+              - ToPort: 80
+                FromPort: 80
+                IpProtocol: 'tcp'
+                External: true
+              - ToPort: 8080
+                FromPort: 8080
+                IpProtocol: 'tcp'
+                External: true
+              - ToPort: 443
+                FromPort: 443
+                IpProtocol: 'tcp'
+                External: true
+          - $.getCloud().securityGroupManager.addGroupIngress($securityGroupIngress)
+          - $.instance.deploy()
+          - $resources: new(sys:Resources)
+          # Deploy Apache Tomcat
+          - $template: $resources.yaml('DeployTomcat.template')
+          - $this.find(std:Environment).reporter.report($this, '[Tomcat] Instance is created. Deploying Tomcat')
+          - $.instance.agent.call($template, $resources)
+          - $._environment.reporter.report($this, '[Tomcat] Tomcat is installed')
+          - If: $.instance.assignFloatingIp
+            Then:
+              - $.publicIp: $.instance.floatingIpAddress
+            Else:
+              - $.publicIp: $.instance.ipAddresses[0]
+          - $.setAttr(deployed, true)
+
+  deployApp:
+    Arguments:
+      app:
+        Contract: $.class(apps:ServletApplication).notNull()
+    Body:
+      - $._environment.reporter.report($this, '[Tomcat] Deploying application to Tomcat')
+      - $app.deployApp($.instance)

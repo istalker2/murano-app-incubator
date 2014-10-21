@@ -1,0 +1,44 @@
+Namespaces:
+  =: io.murano.apps.apache
+  std: io.murano
+  apps: io.murano.apps
+
+Name: TomcatHA
+
+Extends: apps:ServletContainer
+
+Properties:
+  nodes:
+    Contract: [$.class(Tomcat)]
+
+Workflow:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.nodes.pselect($.deploy())
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $.switchOver()
+          - $.setAttr(deployed, true)
+
+  deployApp:
+    Arguments:
+      app:
+        Contract: $.class(apps:ServletApplication).notNull()
+    Body:
+      - $.nodes.pselect($.deployApp($app))
+
+  switchOver:
+    Usage: Action
+    Body:
+      - $nodeIndex: $.getAttr(activeNode, 0-1)
+      - $nodeIndex: $nodeIndex + 1
+      - If: $nodeIndex >= len($this.nodes)
+        Then:
+          - $nodeIndex: 0
+      - $.setAttr(activeNode, $nodeIndex)
+      - $.publicIp: $.nodes[$nodeIndex].publicIp
+      - $._environment.reporter.report($this, format('[TomcatHA] Now available at {0}', $.publicIp))

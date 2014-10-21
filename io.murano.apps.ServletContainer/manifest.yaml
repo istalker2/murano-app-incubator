@@ -1,0 +1,12 @@
+Format: 1.0
+Type: Library
+FullName: io.murano.apps.ServletContainer
+Name: Servlet container base
+Description: |
+ Base class for servlet containers such as Tomcat
+Author: 'Mirantis, Inc'
+Tags: [Servlets, Server, Pages, Java]
+
+Classes:
+ io.murano.apps.ServletContainer: ServletContainer.yaml
+ io.murano.apps.ServletApplication: ServletApplication.yaml

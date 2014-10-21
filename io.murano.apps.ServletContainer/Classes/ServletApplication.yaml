@@ -1,0 +1,27 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+  res: io.murano.resources
+
+Name: ServletApplication
+
+Extends: std:Application
+
+Properties:
+  container:
+    Contract: $.class(ServletContainer).notNull()
+
+
+Workflow:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.container.deploy()
+
+  deployApp:
+    Arguments:
+      instance:
+        Contract: $.class(res:Instance).notNull()

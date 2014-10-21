@@ -1,0 +1,39 @@
+Namespaces:
+    =: io.murano
+    res: io.murano.resources
+    sys: io.murano.system
+
+Name: Environment
+Extends: Cloud
+
+Properties:
+  applications:
+    Contract: [$.class(Application).owned().notNull()]
+
+  agentListener:
+    Contract: $.class(sys:AgentListener)
+    Usage: Runtime
+
+  instanceNotifier:
+    Contract: $.class(sys:InstanceNotifier)
+    Usage: Runtime
+
+  reporter:
+    Contract: $.class(sys:StatusReporter)
+    Usage: Runtime
+
+Methods:
+  initialize:
+    Body:
+      - $this.agentListener: new(sys:AgentListener, name => $.id())
+      - $this.instanceNotifier: new(sys:InstanceNotifier, environment => $this)
+      - $this.reporter: new(sys:StatusReporter, environment => $this)
+
+  deploy:
+    Usage: Action
+    Body:
+      - $.agentListener.start()
+      - Try:
+          - $.applications.pselect($.deploy())
+        Finally:
+          - $.agentListener.stop()

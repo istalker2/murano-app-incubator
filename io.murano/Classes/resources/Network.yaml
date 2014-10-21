@@ -1,0 +1,13 @@
+Namespaces:
+    =: io.murano.resources
+    std: io.murano
+
+Name: Network
+Extends: std:CloudObject
+
+Methods:
+  getNetworkName:
+  getSubnetName:
+  getRouterInterfaceName:
+  getExternalNetId:
+  deploy:
