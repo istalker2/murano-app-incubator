@@ -161,7 +161,7 @@ Methods:
                 $fipName:
                   type: 'OS::Nova::FloatingIP'
                   properties:
-                  pool: $poolName
+                    pool: $poolName
                 $fipName + 'Assignment':
                   type: 'OS::Nova::FloatingIPAssociation'
                   properties:
