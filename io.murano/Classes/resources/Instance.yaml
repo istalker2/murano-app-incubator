@@ -17,7 +17,9 @@ Properties:
   keyname:
     Contract: $.string()
     Default: null
-
+  availabilityZone:
+    Contract: $.string().notNull()
+	Default: nova
   agent:
     Contract: $.class(sys:Agent)
     Usage: Runtime
@@ -108,6 +110,7 @@ Methods:
               properties:
                 flavor: $.flavor
                 image: $.image
+                availability_zone: $.availabilityZone
                 user_data: $userData
                 user_data_format: $userDataFormat
                 key_name: $.keyname
@@ -145,12 +148,20 @@ Methods:
     Body:
       - If: $.assignFloatingIp
         Then:
+          - $availabilityZone2poolMap:
+              nova: public
+              DEFAULT: public
+          - $poolName: coalesce(
+                $availabilityZone2poolMap.get($.availabilityZone),
+                $availabilityZone2poolMap.get('DEFAULT')
+             )
           - $fipName: format('{0}-FloatingIp', $.name)
           - $template:
               resources:
                 $fipName:
                   type: 'OS::Nova::FloatingIP'
-
+                  properties:
+	                pool: $poolName
                 $fipName + 'Assignment':
                   type: 'OS::Nova::FloatingIPAssociation'
                   properties:
