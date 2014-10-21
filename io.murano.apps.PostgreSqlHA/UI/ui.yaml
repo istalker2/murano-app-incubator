@@ -8,29 +8,29 @@ Application:
     - ?:
         type: io.murano.apps.PostgreSql
       name: $.appConfiguration.name + '1'
-      cloud: $.instanceConfiguration1.cloud
+      cloud: $.instanceConfiguration.cloud1
       instance:
         ?:
           type: io.murano.resources.LinuxMuranoInstance
-        name: generateHostname($.instanceConfiguration1.unitNamingPattern, 1)
+        name: generateHostname($.instanceConfiguration.unitNamingPattern1, 1)
         flavor: $.instanceConfiguration.flavor
         image: $.instanceConfiguration.osImage
         keyname: $.instanceConfiguration.keyPair
         assignFloatingIp: $.appConfiguration.assignFloatingIP
-        availabilityZone: $.instanceConfiguration1.availabilityZone
+        availabilityZone: $.instanceConfiguration.availabilityZone1
     - ?:
         type: io.murano.apps.PostgreSql
       name: $.appConfiguration.name + '2'
-      cloud: $.instanceConfiguration2.cloud
+      cloud: $.instanceConfiguration.cloud2
       instance:
         ?:
           type: io.murano.resources.LinuxMuranoInstance
-        name: generateHostname($.instanceConfiguration2.unitNamingPattern, 2)
+        name: generateHostname($.instanceConfiguration.unitNamingPattern2, 2)
         flavor: $.instanceConfiguration.flavor
         image: $.instanceConfiguration.osImage
         keyname: $.instanceConfiguration.keyPair
         assignFloatingIp: $.appConfiguration.assignFloatingIP
-        availabilityZone: $.instanceConfiguration2.availabilityZone
+        availabilityZone: $.instanceConfiguration.availabilityZone2
 
 Forms:
   - appConfiguration:
@@ -79,54 +79,44 @@ Forms:
             Select the Key Pair to control access to instances. You can login to
             instances using this KeyPair after the deployment of application.
           required: false
-  - instanceConfiguration1:
-      fields:
-        - name: title
-          type: string
-          required: false
-          hidden: true
-          description: Specify individual parameters for the first application instance
-        - name: cloud
+        - name: cloud1
           type: io.murano.apps.Cloud
-          label: Destination cloud
+          label: Primary cloud
           required: false
           description: >-
-            Select a cloud/OpenStack region application instance will reside in
-        - name: unitNamingPattern
-          label: Hostname
+            Select a cloud/OpenStack region for primary application instance
+        - name: unitNamingPattern1
+          label: Primary hostname
           type: string
           required: false
           widgetMedia:
             js: ['muranodashboard/js/support_placeholder.js']
             css: {all: ['muranodashboard/css/support_placeholder.css']}
-        - name: availabilityZone
+          description: >-
+            Primary application instance hostname/pattern
+        - name: availabilityZone1
           type: azone
-          label: Availability zone
-          description: Select availability zone where the application would be installed.
+          label: Primary availability zone
+          description: Select availability zone for primary application instance
           required: false
-  - instanceConfiguration2:
-      fields:
-        - name: title
-          type: string
-          required: false
-          hidden: true
-          description: Specify individual parameters for the second application instance
-        - name: cloud
+        - name: cloud2
           type: io.murano.apps.Cloud
-          label: Destination cloud
+          label: Secondary cloud
           required: false
           description: >-
-            Select a cloud/OpenStack region application instance will reside in
-        - name: unitNamingPattern
-          label: Hostname
+            Select a cloud/OpenStack region for secondary application instance
+        - name: unitNamingPattern2
+          label: Secondary hostname
           type: string
           required: false
           widgetMedia:
             js: ['muranodashboard/js/support_placeholder.js']
             css: {all: ['muranodashboard/css/support_placeholder.css']}
-        - name: availabilityZone
+          description: >-
+            Secondary application instance hostname/pattern
+        - name: availabilityZone2
           type: azone
-          label: Availability zone
-          description: Select availability zone where the application would be installed.
+          label: Secondary availability zone
+          description: Select availability zone for secondary application instance
           required: false
 
