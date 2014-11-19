@@ -72,7 +72,7 @@ Methods:
               type: 'OS::Neutron::Net'
               properties:
                 name: $.name
-      - $.cloud.stack.updateTemplate($template)
+      - $._cloud.stack.updateTemplate($template)
 
   createSubnet:
     Body:
