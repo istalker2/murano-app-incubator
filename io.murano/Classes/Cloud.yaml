@@ -61,8 +61,8 @@ Methods:
             'nova': 'public'
             'DEFAULT': 'public'
           'DEFAULT':
-            'nova': 'public'
-            'DEFAULT': 'public'
+            'nova': 'nova'
+            'DEFAULT': 'nova'
 
       - $regionName: coalesce($.regionName, '')
       - $cloud: coalesce($map.get($regionName), $map.get('DEFAULT'))
