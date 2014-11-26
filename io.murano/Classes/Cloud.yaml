@@ -58,10 +58,8 @@ Methods:
     Body:
       - $map:
           'RegionOne':
-            'nova': 'public'
             'DEFAULT': 'public'
           'DEFAULT':
-            'nova': 'nova'
             'DEFAULT': 'nova'
 
       - $regionName: coalesce($.regionName, '')
