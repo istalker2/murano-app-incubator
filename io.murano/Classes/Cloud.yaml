@@ -57,8 +57,6 @@ Methods:
         Default: nova
     Body:
       - $map:
-          'RegionOne':
-            'DEFAULT': 'public'
           'DEFAULT':
             'DEFAULT': 'nova'
 
